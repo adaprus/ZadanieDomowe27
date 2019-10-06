@@ -5,16 +5,16 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.awt.print.Pageable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
 public class AuctionController {
 
-    private AuctionService auctionService;
     private AuctionRepository auctionRepository;
 
-    public AuctionController(AuctionService auctionService, AuctionRepository auctionRepository) {
-        this.auctionService = auctionService;
+    public AuctionController(AuctionRepository auctionRepository) {
         this.auctionRepository = auctionRepository;
     }
 
@@ -23,14 +23,21 @@ public class AuctionController {
                            @RequestParam(required = false) String sort,
                            AuctionFilters auctionFilters) {
 
-        List<Auction> auctions = auctionRepository.findAll();
+        List<Auction> auctions = new ArrayList<>();
 
-        if(sort != null) {
-            auctions = auctionService.findAllSorted(sort);
+        if (sort != null) {
+            if ("color".equals(sort)) {
+                auctions = auctionRepository.findByOrderByColor();
+            } else if ("carModel".equals(sort)) {
+                auctions = auctionRepository.findByOrderByCarModel();
+            } else if ("endDate".equals(sort)) {
+                auctions = auctionRepository.findByOrderByEndDate();
+            } else if ("price".equals(sort)) {
+                auctions = auctionRepository.findByOrderByPrice();
+            }
         } else {
-            auctions = auctionService.findAllForFilters(auctionFilters);;
+            auctions = auctionRepository.findAll();
         }
-
 
 
         model.addAttribute("cars", auctions);

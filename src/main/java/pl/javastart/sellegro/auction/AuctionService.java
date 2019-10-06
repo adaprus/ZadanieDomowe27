@@ -44,10 +44,10 @@ public class AuctionService {
             String[] data = line.split(",");
             long id = Long.parseLong(data[0]);
             String randomAdjective = ADJECTIVES[random.nextInt(ADJECTIVES.length)];
-            String title = randomAdjective + " " + data[1] + " " + data[2];
+//            String title = randomAdjective + " " + data[1] + " " + data[2];
             BigDecimal price = new BigDecimal(data[4].replace("\\.", ","));
             LocalDate endDate = LocalDate.parse(data[5]);
-            Auction auction = new Auction(id, title, data[1], data[2], data[3], price, endDate);
+            Auction auction = new Auction(id, data[1], data[2], data[3], price, endDate);
             auctions.add(auction);
         }
     }
@@ -61,19 +61,18 @@ public class AuctionService {
 
     List<Auction> findAllForFilters(AuctionFilters auctionFilters) {
         return auctions.stream()
-                .filter(auction -> (auctionFilters.getTitle() == null || auction.getTitle().toUpperCase().contains(auctionFilters.getTitle().toUpperCase()))
-                && (auctionFilters.getCarMaker() == null || auction.getCarMaker().toUpperCase().contains(auctionFilters.getCarMaker().toUpperCase())
+                .filter(auction -> (auctionFilters.getCarMaker() == null || auction.getCarMaker().toUpperCase().contains(auctionFilters.getCarMaker().toUpperCase())
                 && (auctionFilters.getCarModel() == null || auction.getCarModel().toUpperCase().contains(auctionFilters.getCarModel().toUpperCase())
                 && (auctionFilters.getColor() == null || auction.getColor().toUpperCase().contains(auctionFilters.getColor().toUpperCase())))))
                 .collect(Collectors.toList());
     }
 
     List<Auction> findAllSorted(String sort) {
-        Comparator<Auction> comparator = Comparator.comparing(Auction::getTitle);
-        if(sort.equals("title")) {
-            comparator = Comparator.comparing(Auction::getTitle);
-        } else if(sort.equals("price")) {
+        Comparator<Auction> comparator = Comparator.comparing(Auction::getPrice);
+        if(sort.equals("price")) {
             comparator = Comparator.comparing(Auction::getPrice);
+//        } else if(sort.equals("title")) {
+//            comparator = Comparator.comparing(Auction::getTitle);
         } else if(sort.equals("color")) {
             comparator = Comparator.comparing(Auction::getColor);
         } else if(sort.equals("endDate")){
